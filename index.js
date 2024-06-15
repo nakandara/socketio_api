@@ -47,7 +47,7 @@ const server = require("http").createServer(app);
 // Socket.io setup
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://sokettest-second-frontend.vercel.app",
   },
 });
 

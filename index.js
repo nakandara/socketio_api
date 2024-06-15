@@ -94,6 +94,13 @@ io.on("connection", (socket) => {
   });
 });
 
+app.get('/', (req, res) => {
+  res.json({
+    message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
+  });
+});
+
+
 // Start server
 server.listen(8800, () => {
   console.log("Backend server is running on port 8800");

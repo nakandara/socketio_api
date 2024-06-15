@@ -11,11 +11,12 @@ const postRoute = require("./routes/posts");
 const conversationRoute = require("./routes/conversations");
 const messageRoute = require("./routes/messages");
 const path = require("path");
-const cors = require("cors");
+const cors = require("cors"); // Import the cors package
 
 dotenv.config();
 
-// MongoDB connection
+
+
 mongoose.connect(
   process.env.MONGO_URL,
   { useNewUrlParser: true, useUnifiedTopology: true },
@@ -30,9 +31,8 @@ app.use("/images", express.static(path.join(__dirname, "public/images")));
 app.use(express.json());
 app.use(helmet());
 app.use(morgan("common"));
-app.use(cors());
+app.use(cors()); // Enable CORS
 
-// Multer setup for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "public/images");
@@ -40,6 +40,12 @@ const storage = multer.diskStorage({
   filename: (req, file, cb) => {
     cb(null, req.body.name);
   },
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
+  });
 });
 
 const upload = multer({ storage: storage });
@@ -51,67 +57,12 @@ app.post("/api/upload", upload.single("file"), (req, res) => {
   }
 });
 
-// Routes
 app.use("/api/auth", authRoute);
 app.use("/api/users", userRoute);
 app.use("/api/posts", postRoute);
 app.use("/api/conversations", conversationRoute);
 app.use("/api/messages", messageRoute);
 
-// Create HTTP server
-const server = require("http").createServer(app);
-
-// Socket.io setup
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "http://localhost:3000",
-  },
-});
-
-let users = [];
-
-const addUser = (userId, socketId) => {
-  !users.some((user) => user.userId === userId) &&
-    users.push({ userId, socketId });
-};
-
-const removeUser = (socketId) => {
-  users = users.filter((user) => user.socketId !== socketId);
-};
-
-const getUser = (userId) => {
-  return users.find((user) => user.userId === userId);
-};
-
-io.on("connection", (socket) => {
-  console.log("a user connected.");
-
-  // Take userId and socketId from user
-  socket.on("addUser", (userId) => {
-    addUser(userId, socket.id);
-    io.emit("getUsers", users);
-  });
-
-  // Send and get message
-  socket.on("sendMessage", ({ senderId, receiverId, text }) => {
-    const user = getUser(receiverId);
-    if (user) {
-      io.to(user.socketId).emit("getMessage", {
-        senderId,
-        text,
-      });
-    }
-  });
-
-  // When disconnect
-  socket.on("disconnect", () => {
-    console.log("a user disconnected!");
-    removeUser(socket.id);
-    io.emit("getUsers", users);
-  });
-});
-
-// Start server
-server.listen(8800, () => {
+app.listen(8800, () => {
   console.log("Backend server is running on port 8800");
 });

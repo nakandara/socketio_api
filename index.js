@@ -45,12 +45,10 @@ app.use("/api/messages", messageRoute);
 const server = require("http").createServer(app);
 
 // Socket.io setup
-const io = new Server(server, {
+const io = require("socket.io")(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
+    origin: "https://sokettest-second-frontend.vercel.app",
   },
-  transports: ['polling']
 });
 
 let users = [];

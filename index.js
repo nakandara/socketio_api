@@ -4,6 +4,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const helmet = require("helmet");
 const morgan = require("morgan");
+
 const userRoute = require("./routes/users");
 const authRoute = require("./routes/auth");
 const postRoute = require("./routes/posts");
@@ -31,7 +32,6 @@ app.use(helmet());
 app.use(morgan("common"));
 app.use(cors());
 
-// Multer setup for file uploads
 
 
 // Routes
@@ -47,10 +47,8 @@ const server = require("http").createServer(app);
 // Socket.io setup
 const io = require("socket.io")(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST']
+    origin: "https://sokettest-second-frontend.vercel.app",
   },
-  transports: ['polling']
 });
 
 let users = [];
@@ -95,13 +93,6 @@ io.on("connection", (socket) => {
     io.emit("getUsers", users);
   });
 });
-
-app.get('/', (req, res) => {
-  res.json({
-    message: '🦄🌈✨👋🌎🌍🌏✨🌈🦄',
-  });
-});
-
 
 // Start server
 server.listen(8800, () => {
